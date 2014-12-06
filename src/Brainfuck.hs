@@ -17,14 +17,14 @@ newtype BrainfuckSource = BrainfuckSource [BrainfuckCommand]
 instance Show BrainfuckSource where
     show (BrainfuckSource commands) = map bfToChar commands
       where
-        bfToChar GoRight = '>'
-        bfToChar GoLeft = '<'
-        bfToChar Increment = '+'
-        bfToChar Decrement = '-'
-        bfToChar Print = '.'
-        bfToChar Read = ','
-        bfToChar LoopL = '['
-        bfToChar LoopR = ']'
+        bfToChar GoRight     = '>'
+        bfToChar GoLeft      = '<'
+        bfToChar Increment   = '+'
+        bfToChar Decrement   = '-'
+        bfToChar Print       = '.'
+        bfToChar Read        = ','
+        bfToChar LoopL       = '['
+        bfToChar LoopR       = ']'
         bfToChar (Comment c) = c
 
 
