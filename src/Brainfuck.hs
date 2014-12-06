@@ -28,8 +28,8 @@ instance Show BrainfuckSource where
         bfToChar (Comment c) = c
 
 
-parseBrainfuck :: String -> BrainfuckSource
-parseBrainfuck = BrainfuckSource . mapMaybe charToBF
+parseBrainfuck :: String -> Maybe BrainfuckSource
+parseBrainfuck = checkSyntax . BrainfuckSource . mapMaybe charToBF
   where
     charToBF '>' = Just GoRight
     charToBF '<' = Just GoLeft
@@ -40,3 +40,14 @@ parseBrainfuck = BrainfuckSource . mapMaybe charToBF
     charToBF '[' = Just LoopL
     charToBF ']' = Just LoopR
     charToBF _   = Nothing
+
+checkSyntax :: BrainfuckSource -> Maybe BrainfuckSource
+checkSyntax bfSource@(BrainfuckSource commands) = verify commands 0
+  where
+    verify :: [BrainfuckCommand] -> Int -> Maybe BrainfuckSource
+    verify (LoopL:xs) l = verify xs (l+1)
+    verify (LoopR:xs) l | l > 0 = verify xs (l-1)
+    verify (LoopR:_) _ = Nothing
+    verify (_:xs) l = verify xs l
+    verify [] 0 = Just bfSource
+    verify [] _ = Nothing
