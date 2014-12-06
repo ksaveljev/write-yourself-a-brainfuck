@@ -1,5 +1,7 @@
 module Brainfuck () where
 
+import Data.Maybe (mapMaybe)
+
 data BrainfuckCommand = GoRight      -- >
                       | GoLeft       -- <
                       | Increment    -- +
@@ -13,14 +15,14 @@ data BrainfuckCommand = GoRight      -- >
 type BrainfuckSource = [BrainfuckCommand]
 
 parseBrainfuck :: String -> BrainfuckSource
-parseBrainfuck = map charToBF
+parseBrainfuck = mapMaybe charToBF
   where
-    charToBF '>' = GoRight
-    charToBF '<' = GoLeft
-    charToBF '+' = Increment
-    charToBF '-' = Decrement
-    charToBF '.' = Print
-    charToBF ',' = Read
-    charToBF '[' = LoopL
-    charToBF ']' = LoopR
-    charToBF c   = Comment c
+    charToBF '>' = Just GoRight
+    charToBF '<' = Just GoLeft
+    charToBF '+' = Just Increment
+    charToBF '-' = Just Decrement
+    charToBF '.' = Just Print
+    charToBF ',' = Just Read
+    charToBF '[' = Just LoopL
+    charToBF ']' = Just LoopR
+    charToBF _   = Nothing
