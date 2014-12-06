@@ -1,4 +1,4 @@
-module Brainfuck () where
+module Brainfuck where
 
 import Data.Maybe (mapMaybe)
 
@@ -12,10 +12,24 @@ data BrainfuckCommand = GoRight      -- >
                       | LoopR        -- ]
                       | Comment Char -- anything else
 
-type BrainfuckSource = [BrainfuckCommand]
+newtype BrainfuckSource = BrainfuckSource [BrainfuckCommand]
+
+instance Show BrainfuckSource where
+    show (BrainfuckSource commands) = map bfToChar commands
+      where
+        bfToChar GoRight = '>'
+        bfToChar GoLeft = '<'
+        bfToChar Increment = '+'
+        bfToChar Decrement = '-'
+        bfToChar Print = '.'
+        bfToChar Read = ','
+        bfToChar LoopL = '['
+        bfToChar LoopR = ']'
+        bfToChar (Comment c) = c
+
 
 parseBrainfuck :: String -> BrainfuckSource
-parseBrainfuck = mapMaybe charToBF
+parseBrainfuck = BrainfuckSource . mapMaybe charToBF
   where
     charToBF '>' = Just GoRight
     charToBF '<' = Just GoLeft
