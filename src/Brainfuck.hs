@@ -42,12 +42,12 @@ parseBrainfuck = checkSyntax . BrainfuckSource . mapMaybe charToBF
     charToBF _   = Nothing
 
 checkSyntax :: BrainfuckSource -> Either String BrainfuckSource
-checkSyntax bfSource@(BrainfuckSource commands) = verify commands 0
+checkSyntax bfSource@(BrainfuckSource commands) = verify commands 0 []
   where
-    verify :: [BrainfuckCommand] -> Int -> Either String BrainfuckSource
-    verify (LoopL:xs) l = verify xs (l+1)
-    verify (LoopR:xs) l | l > 0 = verify xs (l-1)
-    verify (LoopR:_) _ = Left "Mismatched closing parenthesis"
-    verify (_:xs) l = verify xs l
-    verify [] 0 = Right bfSource
-    verify [] _ = Left "Mismatched opening parenthesis"
+    verify :: [BrainfuckCommand] -> Int -> [Int] -> Either String BrainfuckSource
+    verify (LoopL:xs) pos l = verify xs (pos+1) (pos:l)
+    verify (LoopR:xs) pos l | not (null l) = verify xs (pos+1) (tail l)
+    verify (LoopR:_) pos _ = Left $ "Mismatched closing parenthesis at position " ++ show pos
+    verify (_:xs) pos l = verify xs (pos+1) l
+    verify [] _ [] = Right bfSource
+    verify [] _ (pos:_) = Left $ "Mismatched opening parenthesis at position " ++ show pos 
