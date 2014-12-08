@@ -28,7 +28,7 @@ instance Show BrainfuckSource where
         bfToChar (Comment c) = c
 
 
-parseBrainfuck :: String -> Maybe BrainfuckSource
+parseBrainfuck :: String -> Either String BrainfuckSource
 parseBrainfuck = checkSyntax . BrainfuckSource . mapMaybe charToBF
   where
     charToBF '>' = Just GoRight
@@ -41,13 +41,13 @@ parseBrainfuck = checkSyntax . BrainfuckSource . mapMaybe charToBF
     charToBF ']' = Just LoopR
     charToBF _   = Nothing
 
-checkSyntax :: BrainfuckSource -> Maybe BrainfuckSource
+checkSyntax :: BrainfuckSource -> Either String BrainfuckSource
 checkSyntax bfSource@(BrainfuckSource commands) = verify commands 0
   where
-    verify :: [BrainfuckCommand] -> Int -> Maybe BrainfuckSource
+    verify :: [BrainfuckCommand] -> Int -> Either String BrainfuckSource
     verify (LoopL:xs) l = verify xs (l+1)
     verify (LoopR:xs) l | l > 0 = verify xs (l-1)
-    verify (LoopR:_) _ = Nothing
+    verify (LoopR:_) _ = Left "Mismatched closing parenthesis"
     verify (_:xs) l = verify xs l
-    verify [] 0 = Just bfSource
-    verify [] _ = Nothing
+    verify [] 0 = Right bfSource
+    verify [] _ = Left "Mismatched opening parenthesis"
