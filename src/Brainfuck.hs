@@ -31,6 +31,9 @@ data Tape a = Tape [a] -- Left of the pivot element
                     a  -- Pivot element
                    [a] -- Right of the pivot element
 
+instance Functor Tape where
+    fmap f (Tape l p r) = Tape (map f l) (f p) (map f r)
+
 emptyTape :: Tape Int
 emptyTape = Tape zeros 0 zeros
   where
