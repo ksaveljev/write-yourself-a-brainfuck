@@ -1,4 +1,4 @@
 import Brainfuck
 
 main :: IO ()
-main = undefined
+main = readFile "helloworld.bf" >>= runBrainfuck . parseBrainfuck
